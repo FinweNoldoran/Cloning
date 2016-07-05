@@ -72,5 +72,7 @@ target/
 *flymake.py
 
 #library binaryies
-*.so
 *.dSYM
+
+# virtualenv
+cloning/
