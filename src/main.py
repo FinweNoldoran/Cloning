@@ -172,7 +172,7 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             fileName = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File Name', '/')[0]
             if fileName:
                 self.result.write(fileName)
-            self.textBrowser.append("Saved file %s" % fileName)
+                self.textBrowser.append("Saved file %s" % fileName)
         except:
             self.textBrowser.append("Something went wrong while trying to save your file.")
         return
