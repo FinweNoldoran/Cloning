@@ -28,7 +28,7 @@
            <enum>QLayout::SetDefaultConstraint</enum>
           </property>
           <item>
-           <widget class="QLineEdit" name="input">
+           <widget class="QLineEdit" name="inputs">
             <property name="placeholderText">
              <string>Sequence with Target Region</string>
             </property>
@@ -45,6 +45,9 @@
            <widget class="QCheckBox" name="cir_in">
             <property name="text">
              <string>Circular</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -73,6 +76,9 @@
            <widget class="QCheckBox" name="cir_tar">
             <property name="text">
              <string>Circular</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -113,7 +119,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="pr_fw_2">
+           <widget class="QLineEdit" name="pr_rv">
             <property name="placeholderText">
              <string>Reverse Primer</string>
             </property>
@@ -136,9 +142,50 @@
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox">
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QCheckBox" name="checkBox">
+            <property name="text">
+             <string>Cut with same as insert</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="enzyC">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="editable">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="enzyD">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="ComboBox" name="frag_list">
           <property name="enabled">
            <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="run">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>Run PCR, Digest and Ligation</string>
           </property>
          </widget>
         </item>
@@ -161,14 +208,20 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <widget class="QPushButton" name="pushButton_2">
-            <property name="text">
-             <string>Analytical Gel</string>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
-           </widget>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="save_vec">
             <property name="text">
              <string>Save Result</string>
             </property>
@@ -215,6 +268,13 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QComboBox</extends>
+   <header>combobox.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
