@@ -109,9 +109,6 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             self.enzyme2 = br.RestrictionBatch([str(self.enzyB.currentText())]).get(str(self.enzyB.currentText()))
         except (ValueError, TypeError):
             self.textBrowser.append("No enzyme selection")
-            # print self.enzyA.currentText()  # this is empty
-            # print self.enzyA.currentIndex()
-            # self.textBrowser.append(self.enzyA.currentData())
         try:
             self.frag_list.clear()
             if not self.checkBox.isChecked():
@@ -164,6 +161,8 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
                 self.textBrowser.append(str(insert.seq.fig()))
                 self.textBrowser.append("\nTarget Vecotor ends are:\n")
                 self.textBrowser.append(str(target.seq.fig()))
+            except:
+                return
         return
 
     def save_result(self):
