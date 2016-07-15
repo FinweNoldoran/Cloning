@@ -1,7 +1,6 @@
 from PyQt5 import QtWidgets, QtCore
 import sys
 import design
-import os
 import pydna
 import Bio.Restriction as br
 
@@ -10,14 +9,6 @@ import Bio.Restriction as br
 
 # Figure out the vertical and horizontal layout stuff for qt design
 # use lineEdit for holding file location
-
-#figure out how to keep this here and not in design
-#class ComboBox(QtWidgets.QComboBox):
-#    popupAboutToBeShown = QtCore.pyqtSignal()
-
-#    def showPopup(self):
-#        self.popupAboutToBeShown.emit()
-#        super(ComboBox, self).showPopup()
 
 
 class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
@@ -152,7 +143,7 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         try:
             pcr_product = pydna.pcr(self.fw_primer, self.rv_primer, inseq)
             self.textBrowser.append(str(pcr_product.figure()))
-            self.textBrowser.append("\n\n")
+            self.textBrowser.append("\n")
             ov1, insert, ov2 = pcr_product.cut(self.enzyme1, self.enzyme2)
             # need to allow different enzymes here!
             if not self.checkBox.isChecked():
@@ -163,8 +154,16 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             target = target_cut[target_index]
             print target
             self.result = (target + insert).looped()
+            self.textBrowser.append("Success! Your vector is %d base pairs long. \n" % len(self.result.seq))
         except UnboundLocalError:
             self.textBrowser.append("Fill out all inputs")
+        except:
+            self.textBrowser.append("Something went wrong, perhaps the fragments do not fit together?\n")
+            try:
+                self.textBrowser.append("Input sequence with ROI ends: \n")
+                self.textBrowser.append(str(insert.seq.fig()))
+                self.textBrowser.append("\nTarget Vecotor ends are:\n")
+                self.textBrowser.append(str(target.seq.fig()))
         return
 
     def save_result(self):
