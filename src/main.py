@@ -1,8 +1,13 @@
 from PyQt5 import QtWidgets, QtCore
 import sys
 import design
+import geldesign
 import pydna
 import Bio.Restriction as br
+import matplotlib
+matplotlib.use('Qt5Agg')
+import pydna
+from pydna.gel import weight_standard_sample
 
 
 # Notes:
@@ -10,10 +15,129 @@ import Bio.Restriction as br
 # Figure out the vertical and horizontal layout stuff for qt design
 # use lineEdit for holding file location
 
+class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
+    def __init__(self, mainwindow, parent=None):
+        QtWidgets.QDialog.__init__(self, parent)
+        self.setupUi(self, mainwindow=mainwindow)
+        self.main_window = mainwindow
+        self.close_plot.clicked.connect(self.close)  # works
+        self.plot_update.clicked.connect(self.update_plot)
+        self.check_enzy1.stateChanged.connect(lambda: self.update_enz(self.check_enzy1, self.select_enz1))
+        self.check_enzy2.stateChanged.connect(lambda: self.update_enz(self.check_enzy2, self.select_enz2))
+        self.seq_sele.addItems(['1. Sequence with ROI', '2. Target Vector', '3. PCR Product', '4. Resultant Vector'])
+        self.enzy_list = br.CommOnly.as_string()
+        self.enzy_list.sort()
+        self.select_enz1.addItems(self.enzy_list)
+        self.select_enz2.addItems(self.enzy_list)
 
-class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
+    def update_enz(self, enz_check, enz_select):
+        if enz_check.isChecked():
+            enz_select.setEnabled(True)
+        else:
+            enz_select.setEnabled(False)
+        return
+
+    def update_plot(self):
+        try:
+            if self.seq_sele.currentIndex() == 0:  # input sequence
+                try:
+                    gene = self.main_window.inseq
+                except AttributeError:
+                    try:
+                        if self.main_window.cir_tar.isChecked():
+                            gene = pydna.parse(str(self.main_window.inputs.text()))[0].looped()
+                        else:
+                            gene = pydna.parse(str(self.main_window.inputs.text()))[0]
+                    except TypeError:
+                        self.main_window.textBrowser.append("Could not read input files")
+            elif self.seq_sele.currentIndex() == 1:  # target sequence
+                try:
+                    gene = self.main_window.tarseq
+                except AttributeError:
+                    try:
+                        if self.main_window.cir_tar.isChecked():
+                            gene = pydna.parse(str(self.main_window.target.text()))[0].looped()
+                        else:
+                            gene = pydna.parse(str(self.main_window.target.text()))[0]
+                    except TypeError:
+                        self.main_window.textBrowser.append("Could not read input files")
+            elif self.seq_sele.currentIndex() == 2:  # pcr product
+                try:
+                    gene = self.main_window.pcr_product
+                except AttributeError:
+                    self.main_window.textBrowser.append("You need to run the PCR first.")
+                    self.close()
+                    return
+            elif self.seq_sele.current() == 3:
+                try:
+                    gene = self.main_window.result
+                except AttributeError:
+                    self.main_window.textBrowser.append("You have to clone it first!")
+                    self.close()
+                    return
+            else:
+                return
+        except Exception, e:
+            self.main_window.textBrowser.append("DNA selection error " + str(e))
+        try:
+            if self.check_enzy1.isChecked() and not self.check_enzy2.isChecked():
+                self.update_figure(gene, enz1=str(self.select_enz1.currentText()), enz2=None)
+            elif self.check_enzy2.isChecked() and not self.check_enzy1.isChecked():
+                self.update_figure(gene, enz1=None, enz2=str(self.select_enz2.currentText()))
+            elif self.check_enzy1.isChecked() and self.check_enzy2.isChecked():
+                self.update_figure(gene, enz1=str(self.select_enz1.currentText()), enz2=str(self.select_enz2.currentText()))
+            elif not self.check_enzy1.isChecked() and not self.check_enzy2.isChecked():
+                self.update_figure(gene, enz1=None, enz2=None)
+            else:
+                self.main_window.textBrowser.append("Enzyme selection error")
+        except Exception, e:
+            print "enzyme selector error " + str(e)
+            return
+        try:
+            # self.figure.draw()  # this executes!
+            self.gel.draw()  # so does this!
+        except Exception, e:
+            print "gel draw error " + str(e)
+            return
+
+    def update_figure(self, gene, enz1=None, enz2=None):
+        st = weight_standard_sample('1kb_GeneRuler')
+        # enz1 and 2 type error?
+        # no enzyme
+        try:
+            # self.clear() plotter has not attribute clear
+            # self.fig.clear()
+            # del(self.fig) enzyme selector error 'myplots' object has no attribute 'gel'
+            if enz1 is None and enz2 is None:
+                pydna.Gel([st, [gene]]).run(infig=self.figure)  # check if gnee needs to be in list -- it does this command works
+                return
+            # single enzyme
+            elif (enz1 is not None and enz2 is None):
+                enzyme = br.RestrictionBatch([enz1]).get(enz1)
+                cuts = gene.cut(enzyme)
+                pydna.Gel([st, cuts]).run(infig=self.figure)
+                return
+            elif (enz1 is None and enz2 is not None):
+                enzyme = br.RestrictionBatch([enz2]).get(enz2)
+                cuts = gene.cut(enzyme)
+                pydna.Gel([st, cuts]).run(infig=self.figure)
+                return
+            # both enzymes
+            elif (enz1 is not None and enz2 is not None):
+                ezA = br.RestrictionBatch([enz1]).get(enz1)
+                ezB = br.RestrictionBatch([enz2]).get(enz2)
+                cuts = gene.cut(ezA, ezB)
+                pydna.Gel([st, cuts]).run(infig=self.figure)
+                return
+            else:
+                self.mainwindow.textBrowser.append("could not update figure")
+        except Exception, e:
+            print "plotter error: " + str(e)
+
+
+class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
     def __init__(self, parent=None):
-        super(ExampleApp, self).__init__(parent)
+        super(CloneApp, self).__init__(parent)
         self.setupUi(self)
         self.setWindowTitle("CloneApp")
         self.br_in.clicked.connect(lambda: self.browse_folder(self.inputs))
@@ -27,8 +151,13 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.checkBox.stateChanged.connect(self.target_enzymes)
         self.frag_list.popupAboutToBeShown.connect(self.populate_frag)
         self.save_vec.clicked.connect(self.save_result)
+        self.digest_vec.clicked.connect(self.open_plot)
 
         # the clone button, maybe only enable when all inputs are there?
+        
+    def open_plot(self):
+    	plotwindow = myplots(self, parent=self)
+        plotwindow.show()
 
     def browse_folder(self, line):
         line.clear()
@@ -178,7 +307,7 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    form = ExampleApp()
+    form = CloneApp()
     form.show()
     app.exec_()
 
