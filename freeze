@@ -1,0 +1,17 @@
+appdirs==1.4.0
+biopython==1.67
+cycler==0.10.0
+decorator==4.0.10
+matplotlib==1.5.1
+mpldatacursor==0.6.2
+networkx==1.11
+numpy==1.11.1
+Pint==0.6
+prettytable==0.7.2
+pydna==1.0.1
+PyInstaller==3.2
+pyparsing==2.1.5
+python-dateutil==2.5.3
+pytz==2016.6.1
+scipy==0.17.1
+six==1.10.0
