@@ -48,6 +48,7 @@ coverage.xml
 .hypothesis/
 
 #test stuff
+learning/
 testing/
 *.txt
 *.html
