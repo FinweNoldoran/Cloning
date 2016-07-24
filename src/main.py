@@ -9,13 +9,14 @@ matplotlib.use('Qt5Agg')
 import pydna
 from pydna.gel import weight_standard_sample
 
-
-# Notes:
-
-# Figure out the vertical and horizontal layout stuff for qt design
-# use lineEdit for holding file location
+'''
+CloneApp main python file. All windows are defined here, currently there is no help or update window. These are on my to do.
+'''
 
 class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
+    '''
+    The myplots class defines the window displaying the gel simulation. This is calculated inside the pydna.gel module.
+    '''
     def __init__(self, mainwindow, parent=None):
         QtWidgets.QDialog.__init__(self, parent)
         self.setupUi(self, mainwindow=mainwindow)
@@ -31,6 +32,9 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
         self.select_enz2.addItems(self.enzy_list)
 
     def update_enz(self, enz_check, enz_select):
+        '''
+        Check the state of the digestiong checkbox, and enable or diable the enzyme dropdown lists accordingly.
+        '''
         if enz_check.isChecked():
             enz_select.setEnabled(True)
         else:
@@ -38,6 +42,9 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
         return
 
     def update_plot(self):
+        '''
+        This function checks the states of all the inputs, parses the various options and passes them on to an appropirate call of the pydna gel simulation function via the update_figure function. It will attempt to throw usefull exceptions if inputs are misdefined or incorrect. This needs more work.
+        '''
         try:
             if self.seq_sele.currentIndex() == 0:  # input sequence
                 try:
@@ -101,13 +108,10 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
             return
 
     def update_figure(self, gene, enz1=None, enz2=None):
+        ''' Once the input is checked by update_plot, the values are passed to this function, which actually runs the pydna gel simulation.
+        '''
         st = weight_standard_sample('1kb_GeneRuler')
-        # enz1 and 2 type error?
-        # no enzyme
         try:
-            # self.clear() plotter has not attribute clear
-            # self.fig.clear()
-            # del(self.fig) enzyme selector error 'myplots' object has no attribute 'gel'
             if enz1 is None and enz2 is None:
                 pydna.Gel([st, [gene]]).run(infig=self.figure)  # check if gnee needs to be in list -- it does this command works
                 return
@@ -156,7 +160,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         # the clone button, maybe only enable when all inputs are there?
         
     def open_plot(self):
-    	plotwindow = myplots(self, parent=self)
+        plotwindow = myplots(self, parent=self)
         plotwindow.show()
 
     def browse_folder(self, line):
@@ -218,7 +222,6 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             self.enzyD.setEnabled(False)
 
     def populate_frag(self):
-        #  self.frag_list.addItem("Test")
         try:
             if self.cir_tar.isChecked():
                 tarseq = pydna.parse(str(self.target.text()))[0].looped()
@@ -230,7 +233,6 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             #self.target.clear()
             self.textBrowser.append("Could not read input files")
         try:
-            # This fails
             if not self.checkBox.isChecked():
                 self.enzyme3 = br.RestrictionBatch([str(self.enzyC.currentText())]).get(str(self.enzyC.currentText()))
                 self.enzyme4 = br.RestrictionBatch([str(self.enzyD.currentText())]).get(str(self.enzyD.currentText()))
@@ -251,7 +253,8 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         return
 
     def clone(self):
-        # This is the meat and potatoes
+        '''This function does some input checking, after the previous functions have parsed most of the inputs. The target sequence is parsed again as in the populate_frag function. A PCR reaction is run. Sequences are digested and ligated, and the output is saved to self.result Which is always assumed to be a looped stucture.
+        '''
         try:
             if self.cir_in.isChecked():
                 inseq = pydna.parse(str(self.inputs.text()))[0].looped()

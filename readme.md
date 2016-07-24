@@ -39,4 +39,10 @@ Currently there is no way of selecting which ladder you wish to use. This will c
 
 Currently there is only a OS X distribution, and I am not sure how to distribute binaries to other systems as I do not have access to them and the available wrappers struggle with a matplotlib pyqt5 python application. Suggestions welcome. Currently I am using PyInstaller.
 
-You can however run the source, I advise running in a virtual envirionment, as there are currently several quircks of pydna (e.g. Pint must be version 0.6) and I have edited a file in the pydna library. There is an upcoming pydna release in python3 so things may change. Currently things are running in python 2.7.12 and the dependencies for this project can be found in the freeze file. In addition you will need to install pyqt5 and sip. I find the easiest way to get these working in a virtualenv, in to install them systemwide (e.g. via homebrew) and then copy the files in your python lib to the virtual env ```virutalenv/lib/python2.7/``` folder. I will provided a modified gel.py from pydna in a suitably named directory, which you will have to use and replace the one installed in your ```virtualenv/lib/python2.7site-packages/pydna``` folder.
+You can however run the source, I advise running in a virtual envirionment, as there are currently several quircks of pydna (e.g. Pint must be version 0.6) and I have edited a file in the pydna library. There is an upcoming pydna release in python3 so things may change. Currently things are running in python 2.7.12 and the dependencies for this project can be found in the freeze file. In addition you will need to install pyqt5 and sip. I find the easiest way to get these working in a virtualenv, is to install them systemwide (e.g. via homebrew) and then copy the files in your python lib to the virtual env ```virutalenv/lib/python2.7/``` folder. I will provided a modified gel.py from pydna in a suitably named directory, which you will have to use and replace the one installed in your ```virtualenv/lib/python2.7site-packages/pydna``` folder.
+
+## To Do
+
+- Choose your own DNA ladder
+- Make a help window
+- Implement some sort of updater/update window
