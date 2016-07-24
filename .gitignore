@@ -52,6 +52,7 @@ learning/
 testing/
 *.txt
 *.html
+.env
 
 # Translations
 *.mo
