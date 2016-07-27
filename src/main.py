@@ -75,7 +75,7 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
                     self.main_window.textBrowser.append("You need to run the PCR first.")
                     self.close()
                     return
-            elif self.seq_sele.current() == 3:
+            elif self.seq_sele.currentIndex() == 3:
                 try:
                     gene = self.main_window.result
                 except AttributeError:
@@ -83,6 +83,7 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
                     self.close()
                     return
             else:
+                print "plotting if statment fails"
                 return
         except Exception, e:
             self.main_window.textBrowser.append("DNA selection error " + str(e))
@@ -111,6 +112,8 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
         ''' Once the input is checked by update_plot, the values are passed to this function, which actually runs the pydna gel simulation.
         '''
         st = weight_standard_sample('1kb_GeneRuler')
+        # print enz1
+        # print enz2
         try:
             if enz1 is None and enz2 is None:
                 pydna.Gel([st, [gene]]).run(infig=self.figure)  # check if gnee needs to be in list -- it does this command works
@@ -131,6 +134,7 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
                 ezA = br.RestrictionBatch([enz1]).get(enz1)
                 ezB = br.RestrictionBatch([enz2]).get(enz2)
                 cuts = gene.cut(ezA, ezB)
+                print cuts
                 pydna.Gel([st, cuts]).run(infig=self.figure)
                 return
             else:
@@ -158,7 +162,6 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.digest_vec.clicked.connect(self.open_plot)
 
         # the clone button, maybe only enable when all inputs are there?
-        
     def open_plot(self):
         plotwindow = myplots(self, parent=self)
         plotwindow.show()
@@ -211,7 +214,20 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
     def target_enzymes(self):
         if not self.checkBox.isChecked():
-            enz = br.CommOnly.as_string()
+            if not hasattr(self, 'tarseq'):
+                try:
+                    if self.cir_tar.isChecked():
+                        self.tarseq = pydna.parse(str(self.target.text()))[0].looped()
+                    else:
+                        self.tarseq = pydna.parse(str(self.target.text()))[0]
+                except TypeError:
+                    self.textBrowser.append("Could not read input files")
+            if hasattr(self, 'tarseq'):
+                ana = br.Analysis(br.RestrictionBatch(br.CommOnly), self.tarseq.seq)
+                options = br.RestrictionBatch(ana.with_sites())
+                enz = options.as_string()
+            else:
+                enz = br.CommOnly.as_string()
             enz.sort()
             self.enzyC.setEnabled(True)
             self.enzyC.addItems(enz)
@@ -222,16 +238,17 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             self.enzyD.setEnabled(False)
 
     def populate_frag(self):
-        try:
-            if self.cir_tar.isChecked():
-                tarseq = pydna.parse(str(self.target.text()))[0].looped()
-            else:
-                tarseq = pydna.parse(str(self.target.text()))[0]
-        except TypeError:
-            # print that you cant parse file with a proper dialogue
-            #self.inputs.clear()
-            #self.target.clear()
-            self.textBrowser.append("Could not read input files")
+        if not hasattr(self, 'tarseq'):
+            try:
+                if self.cir_tar.isChecked():
+                    self.tarseq = pydna.parse(str(self.target.text()))[0].looped()
+                else:
+                    self.tarseq = pydna.parse(str(self.target.text()))[0]
+            except TypeError:
+                # print that you cant parse file with a proper dialogue
+                #self.inputs.clear()
+                #self.target.clear()
+                self.textBrowser.append("Could not read input files")
         try:
             if not self.checkBox.isChecked():
                 self.enzyme3 = br.RestrictionBatch([str(self.enzyC.currentText())]).get(str(self.enzyC.currentText()))
@@ -257,31 +274,31 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         '''
         try:
             if self.cir_in.isChecked():
-                inseq = pydna.parse(str(self.inputs.text()))[0].looped()
+                self.inseq = pydna.parse(str(self.inputs.text()))[0].looped()
             else:
-                inseq = pydna.parse(str(self.inputs.text()))[0]
+                self.inseq = pydna.parse(str(self.inputs.text()))[0]
             if self.cir_tar.isChecked():
-                tarseq = pydna.parse(str(self.target.text()))[0].looped()
+                self.tarseq = pydna.parse(str(self.target.text()))[0].looped()
             else:
-                tarseq = pydna.parse(str(self.target.text()))[0]
+                self.tarseq = pydna.parse(str(self.target.text()))[0]
         except TypeError:
             # print that you cant parse file with a proper dialogue
             self.textBrowser.append("Could not read input files")
         except IndexError:
             self.textBrowser.append("Are you sure you have input files?")
         try:
-            pcr_product = pydna.pcr(self.fw_primer, self.rv_primer, inseq)
-            self.textBrowser.append(str(pcr_product.figure()))
+            self.pcr_product = pydna.pcr(self.fw_primer, self.rv_primer, inseq)
+            self.textBrowser.append(str(self.pcr_product.figure()))
             self.textBrowser.append("\n")
-            ov1, insert, ov2 = pcr_product.cut(self.enzyme1, self.enzyme2)
+            ov1, insert, ov2 = self.pcr_product.cut(self.enzyme1, self.enzyme2)
             # need to allow different enzymes here!
             if not self.checkBox.isChecked():
-                target_cut = tarseq.cut(self.enzyme3, self.enzyme4)
+                target_cut = self.tarseq.cut(self.enzyme3, self.enzyme4)
             else:
-                target_cut = tarseq.cut(self.enzyme1, self.enzyme2)
+                target_cut = self.tarseq.cut(self.enzyme1, self.enzyme2)
             target_index = self.frag_list.currentIndex()
             target = target_cut[target_index]
-            print target
+            # print target
             self.result = (target + insert).looped()
             self.textBrowser.append("Success! Your vector is %d base pairs long. \n" % len(self.result.seq))
         except UnboundLocalError:
