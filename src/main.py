@@ -123,11 +123,11 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
                               3: ['High_Range_GeneRuler', [48502, 24508, 20555, 17000, 15258, 13825, 12119, 10171]]}
             index = self.ladder.currentIndex()
             st = weight_standard_sample(standards_dict.get(index)[0])
-            out = 'ladder: \n' + '\n'.join(['%i' % i for i in standards_dict.get(index)[1]])
+            out = 'Ladder (bp): \n' + '\n'.join(['%i' % i for i in standards_dict.get(index)[1]])
             self.gel_browser.append(out)
         except:
             st = weight_standard_sample('1kb_GeneRuler')
-            out = "ladder: \n 10000\n8000\n6000\n5000\n4000\n3500\n3000\n2500\n2000\n1500\n1000\n750\n500\n250"
+            out = "Ladder (bp): \n 10000\n8000\n6000\n5000\n4000\n3500\n3000\n2500\n2000\n1500\n1000\n750\n500\n250"
             self.gel_browser.append(out)
         # print enz1
         # print enz2
