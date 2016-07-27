@@ -31,7 +31,7 @@ You can save the result, any annotated features should be saved from your input 
 
 ### Run a Gel
 
-If you click the Analytical Digest button on the bottom left, a new window will appear. Here you can choose a sequence (roi input, target vector, PCR, and resulting vector). You can run these on a gel, with your choice of 0, 1 or 2 enzyme digestion. Please take the gel simulation results with a pinch of salt.
+If you click the Analytical Digest button on the bottom left, a new window will appear. Here you can choose a sequence (roi input, target vector, PCR, and resulting vector). You can run these on a gel, with your choice of 0, 1 or 2 enzyme digestion. Please take the gel simulation results with a pinch of salt (For example, currently an undigested plasmid will run a the same place as an equivalent length of linear DNA. You can obviously forget about any supercoiling effects here too.). 
 
 Currently there is no way of selecting which ladder you wish to use. This will change in the future. The current ladder is: 10000, 8000, 6000, 5000, 4000, 3500, 3000, 2500, 2000, 1500, 1000, 750, 500 & 250 base pairs.
 

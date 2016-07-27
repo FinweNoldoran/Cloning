@@ -43,7 +43,10 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
 
     def update_plot(self):
         '''
-        This function checks the states of all the inputs, parses the various options and passes them on to an appropirate call of the pydna gel simulation function via the update_figure function. It will attempt to throw usefull exceptions if inputs are misdefined or incorrect. This needs more work.
+        This function checks the states of all the inputs,
+        parses the various options and passes them on to an appropirate call of the pydna gel simulation function,
+        via the update_figure function.
+        It will attempt to throw usefull exceptions if inputs are misdefined or incorrect. This needs more work.
         '''
         try:
             if self.seq_sele.currentIndex() == 0:  # input sequence
@@ -270,7 +273,9 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         return
 
     def clone(self):
-        '''This function does some input checking, after the previous functions have parsed most of the inputs. The target sequence is parsed again as in the populate_frag function. A PCR reaction is run. Sequences are digested and ligated, and the output is saved to self.result Which is always assumed to be a looped stucture.
+        '''This function does some input checking, after the previous functions have parsed most of the inputs.
+        The target sequence is parsed again as in the populate_frag function. A PCR reaction is run.
+        Sequences are digested and ligated, and the output is saved to self.result Which is always assumed to be a looped stucture.
         '''
         try:
             if self.cir_in.isChecked():
@@ -287,7 +292,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         except IndexError:
             self.textBrowser.append("Are you sure you have input files?")
         try:
-            self.pcr_product = pydna.pcr(self.fw_primer, self.rv_primer, inseq)
+            self.pcr_product = pydna.pcr(self.fw_primer, self.rv_primer, self.inseq)
             self.textBrowser.append(str(self.pcr_product.figure()))
             self.textBrowser.append("\n")
             ov1, insert, ov2 = self.pcr_product.cut(self.enzyme1, self.enzyme2)
