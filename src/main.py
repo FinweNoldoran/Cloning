@@ -30,6 +30,7 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
         self.enzy_list.sort()
         self.select_enz1.addItems(self.enzy_list)
         self.select_enz2.addItems(self.enzy_list)
+        self.ladder.addItems(['1kb GeneRuler', '1kb+ GeneRuler', 'Mix GeneRuler', 'High Range GeneRuler'])
 
     def update_enz(self, enz_check, enz_select):
         '''
@@ -114,7 +115,20 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
     def update_figure(self, gene, enz1=None, enz2=None):
         ''' Once the input is checked by update_plot, the values are passed to this function, which actually runs the pydna gel simulation.
         '''
-        st = weight_standard_sample('1kb_GeneRuler')
+        try:
+            self.gel_browser.clear()
+            standards_dict = {0: ['1kb_GeneRuler', [10000, 8000, 6000, 5000, 4000, 3500, 3000, 2500, 2000, 1500, 1000, 750, 500, 250]],
+                              1: ['1kb+_GeneRuler', [20000, 10000, 7000, 5000, 4000, 3000, 2000, 1500, 1000, 700, 500, 400, 300, 200, 75]],
+                              2: ['Mix_GeneRuler', [10000, 8000, 6000, 5000, 4000, 3500, 3000, 2500, 2000, 1500, 1200, 1000, 900, 800, 700, 600, 500, 400, 300, 200, 100]],
+                              3: ['High_Range_GeneRuler', [48502, 24508, 20555, 17000, 15258, 13825, 12119, 10171]]}
+            index = self.ladder.currentIndex()
+            st = weight_standard_sample(standards_dict.get(index)[0])
+            out = 'ladder: \n' + '\n'.join(['%i' % i for i in standards_dict.get(index)[1]])
+            self.gel_browser.append(out)
+        except:
+            st = weight_standard_sample('1kb_GeneRuler')
+            out = "ladder: \n 10000\n8000\n6000\n5000\n4000\n3500\n3000\n2500\n2000\n1500\n1000\n750\n500\n250"
+            self.gel_browser.append(out)
         # print enz1
         # print enz2
         try:

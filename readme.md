@@ -43,6 +43,6 @@ You can however run the source, I advise running in a virtual environment, as th
 
 ## To Do
 
-- Choose your own DNA ladder
+~~- Choose your own DNA ladder~~
 - Make a help window
 - Implement some sort of updater/update window
