@@ -115,6 +115,11 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
     def update_figure(self, gene, enz1=None, enz2=None):
         ''' Once the input is checked by update_plot, the values are passed to this function, which actually runs the pydna gel simulation.
         '''
+        def print_fragments(frags):
+            out = "\nFragment lengths (bp): \n"
+            for i, f in enumerate(frags):
+                out += '%i. %i\n' % (i+1, len(f.seq))
+            self.gel_browser.append(out)
         try:
             self.gel_browser.clear()
             standards_dict = {0: ['1kb_GeneRuler', [10000, 8000, 6000, 5000, 4000, 3500, 3000, 2500, 2000, 1500, 1000, 750, 500, 250]],
@@ -140,19 +145,22 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
                 enzyme = br.RestrictionBatch([enz1]).get(enz1)
                 cuts = gene.cut(enzyme)
                 pydna.Gel([st, cuts]).run(infig=self.figure)
+                print_fragments(cuts)
                 return
             elif (enz1 is None and enz2 is not None):
                 enzyme = br.RestrictionBatch([enz2]).get(enz2)
                 cuts = gene.cut(enzyme)
                 pydna.Gel([st, cuts]).run(infig=self.figure)
+                print_fragments(cuts)
                 return
             # both enzymes
             elif (enz1 is not None and enz2 is not None):
                 ezA = br.RestrictionBatch([enz1]).get(enz1)
                 ezB = br.RestrictionBatch([enz2]).get(enz2)
                 cuts = gene.cut(ezA, ezB)
-                print cuts
+                # print cuts
                 pydna.Gel([st, cuts]).run(infig=self.figure)
+                print_fragments(cuts)
                 return
             else:
                 self.mainwindow.textBrowser.append("could not update figure")
