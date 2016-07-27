@@ -134,8 +134,6 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
             st = weight_standard_sample('1kb_GeneRuler')
             out = "Ladder (bp): \n 10000\n8000\n6000\n5000\n4000\n3500\n3000\n2500\n2000\n1500\n1000\n750\n500\n250"
             self.gel_browser.append(out)
-        # print enz1
-        # print enz2
         try:
             if enz1 is None and enz2 is None:
                 pydna.Gel([st, [gene]]).run(infig=self.figure)  # check if gnee needs to be in list -- it does this command works

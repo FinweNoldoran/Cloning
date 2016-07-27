@@ -17,7 +17,7 @@ For a basic run cloning simulation, you will require four pieces of information:
 
 ### Lets Go!
 
-Browse for your roi and target vector sequences in their respective boxes. If the sequence files represent looped plasmids, keep the circular check box checked, otherwise uncheck this. The circular check box will force you sequence to be understood as a complete plasmid.
+Browse for your roi and target vector sequences in their respective boxes. If the sequence files represent looped plasmids, keep the circular check box checked, otherwise uncheck this. The circular check box will force your sequence to be understood as a complete plasmid.
 
 Enter in your plasmid sequences, on the right a list of restriction enzymes with sites in your primers will appear. Please select the ones you wish to use. 
 
