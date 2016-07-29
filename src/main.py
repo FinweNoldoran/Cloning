@@ -188,12 +188,19 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         except UnboundLocalError:
             self.textBrowser.append("Fill out all inputs")
         except:
+            self.textBrowser.clear()
             self.textBrowser.append("Something went wrong, perhaps the fragments do not fit together?\n")
             try:
-                self.textBrowser.append("Input sequence with ROI ends: \n")
-                self.textBrowser.append(str(insert.seq.fig()))
-                self.textBrowser.append("\nTarget Vecotor ends are:\n")
-                self.textBrowser.append(str(target.seq.fig()))
+                try:
+                    self.textBrowser.append("Input sequence with ROI ends look like: \n")
+                    self.textBrowser.append(str(insert.seq.fig()))
+                except:
+                    self.textBrowser.append("There appears to be an issue with the sequence containing your gene of interest.")
+                try:
+                    self.textBrowser.append("\nTarget Vecotor ends look like:\n")
+                    self.textBrowser.append(str(target.seq.fig()))
+                except:
+                    self.textBrowser.append("There appears to be an issue with your target vector sequence.")
             except:
                 return
         return
