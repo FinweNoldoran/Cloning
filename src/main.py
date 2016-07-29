@@ -127,10 +127,9 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
                 else:
                     self.tarseq = pydna.parse(str(self.target.text()))[0]
             except TypeError:
-                # print that you cant parse file with a proper dialogue
-                #self.inputs.clear()
-                #self.target.clear()
                 self.textBrowser.append("Could not read input files")
+            except:
+                return
         try:
             if not self.checkBox.isChecked():
                 self.enzyme3 = br.RestrictionBatch([str(self.enzyC.currentText())]).get(str(self.enzyC.currentText()))
@@ -142,9 +141,9 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         try:
             self.frag_list.clear()
             if not self.checkBox.isChecked():
-                target_cut = tarseq.cut(self.enzyme3, self.enzyme4)
+                target_cut = self.tarseq.cut(self.enzyme3, self.enzyme4)
             else:
-                target_cut = tarseq.cut(self.enzyme1, self.enzyme2)
+                target_cut = self.tarseq.cut(self.enzyme1, self.enzyme2)
             for i, fragment in enumerate(target_cut):
                 self.frag_list.addItem('Fragment %d, with %d basepairs ' % (i+1, len(fragment.seq)))
         except:
