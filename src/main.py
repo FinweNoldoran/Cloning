@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets
 import sys
 import design
 import pydna
@@ -6,7 +6,6 @@ import Bio.Restriction as br
 import matplotlib
 matplotlib.use('Qt5Agg')
 import pydna
-from pydna.gel import weight_standard_sample
 from gelwindow import myplots
 
 CURRENT_VERSION = '0.0.01'
@@ -14,6 +13,7 @@ CURRENT_VERSION = '0.0.01'
 '''
 CloneApp main python file. All windows are defined here, currently there is no help or update window. These are on my to do.
 '''
+
 
 class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
     def __init__(self, parent=None):
