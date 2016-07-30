@@ -103,6 +103,21 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         line.setText(file_name)
         # self.textBrowser.append("Testing")
 
+    def get_tarseq(self):
+        if not hasattr(self, 'tarseq'):
+                try:
+                    if self.cir_tar.isChecked():
+                        self.tarseq = pydna.parse(str(self.target.text()))[0].looped()
+                        return True
+                    else:
+                        self.tarseq = pydna.parse(str(self.target.text()))[0]
+                        return True
+                except (TypeError, IndexError):
+                    self.textBrowser.append("Could not read input files.")
+                    return False
+        else:
+            return True
+
     def fwprimer_done(self, primer):
         temp = primer.text().lower()
         if all(i in self.valid for i in temp):
@@ -145,17 +160,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
     def target_enzymes(self):
         if not self.checkBox.isChecked():
-            if not hasattr(self, 'tarseq'):
-                try:
-                    if self.cir_tar.isChecked():
-                        self.tarseq = pydna.parse(str(self.target.text()))[0].looped()
-                    else:
-                        self.tarseq = pydna.parse(str(self.target.text()))[0]
-                except (TypeError, IndexError):
-                    self.textBrowser.append("Could not read input files to generate list of enzymes with restriction sites.")
-                except:
-                    self.error_message("Something went rather wrong.")
-            if hasattr(self, 'tarseq'):
+            if self.get_tarseq():
                 ana = br.Analysis(br.RestrictionBatch(br.CommOnly), self.tarseq.seq)
                 options = br.RestrictionBatch(ana.with_sites())
                 enz = options.as_string()
@@ -171,16 +176,8 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             self.enzyD.setEnabled(False)
 
     def populate_frag(self):
-        if not hasattr(self, 'tarseq'):
-            try:
-                if self.cir_tar.isChecked():
-                    self.tarseq = pydna.parse(str(self.target.text()))[0].looped()
-                else:
-                    self.tarseq = pydna.parse(str(self.target.text()))[0]
-            except TypeError:
-                self.textBrowser.append("Could not read input files")
-            except:
-                return
+        if not self.get_tarseq():
+            return
         try:
             if not self.checkBox.isChecked():
                 self.enzyme3 = br.RestrictionBatch([str(self.enzyC.currentText())]).get(str(self.enzyC.currentText()))
@@ -211,28 +208,27 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
                 self.inseq = pydna.parse(str(self.inputs.text()))[0].looped()
             else:
                 self.inseq = pydna.parse(str(self.inputs.text()))[0]
-            if self.cir_tar.isChecked():
-                self.tarseq = pydna.parse(str(self.target.text()))[0].looped()
-            else:
-                self.tarseq = pydna.parse(str(self.target.text()))[0]
+            if not self.get_tarseq():
+                return
         except TypeError:
             # print that you cant parse file with a proper dialogue
             self.textBrowser.append("Could not read input files")
+            return
         except IndexError:
             self.textBrowser.append("Are you sure you have input files?")
+            return
         try:
             self.pcr_product = pydna.pcr(self.fw_primer, self.rv_primer, self.inseq)
             self.textBrowser.append(str(self.pcr_product.figure()))
             self.textBrowser.append("\n")
             ov1, insert, ov2 = self.pcr_product.cut(self.enzyme1, self.enzyme2)
-            # need to allow different enzymes here!
             if not self.checkBox.isChecked():
                 target_cut = self.tarseq.cut(self.enzyme3, self.enzyme4)
             else:
                 target_cut = self.tarseq.cut(self.enzyme1, self.enzyme2)
             target_index = self.frag_list.currentIndex()
             target = target_cut[target_index]
-            # print target
+            # print target with nice overlaps showing
             self.result = (target + insert).looped()
             self.textBrowser.append("Success! Your vector is %d base pairs long. \n" % len(self.result.seq))
         except UnboundLocalError:
@@ -241,18 +237,15 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             self.textBrowser.clear()
             self.textBrowser.append("Something went wrong, perhaps the fragments do not fit together?\n")
             try:
-                try:
-                    self.textBrowser.append("Input sequence with ROI ends look like: \n")
-                    self.textBrowser.append(str(insert.seq.fig()))
-                except:
-                    self.textBrowser.append("There appears to be an issue with the sequence containing your gene of interest.")
-                try:
-                    self.textBrowser.append("\nTarget Vecotor ends look like:\n")
-                    self.textBrowser.append(str(target.seq.fig()))
-                except:
-                    self.textBrowser.append("There appears to be an issue with your target vector sequence.")
+                self.textBrowser.append("Input sequence with ROI ends look like: \n")
+                self.textBrowser.append(str(insert.seq.fig()))
             except:
-                return
+                self.textBrowser.append("There appears to be an issue with the sequence containing your gene of interest.")
+            try:
+                self.textBrowser.append("\nTarget Vecotor ends look like:\n")
+                self.textBrowser.append(str(target.seq.fig()))
+            except:
+                self.textBrowser.append("There appears to be an issue with your target vector sequence.")
         return
 
     def save_result(self):
