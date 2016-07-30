@@ -60,7 +60,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
     def check_updates(self):
         def parse_version(version):
             try:
-                score = [1000, 100, 10]
+                score = [1000, 100, 1]
                 split = [int(v) for v in version.split(".")]
                 return sum([a*b for a, b in zip(split, score)])
             except:
