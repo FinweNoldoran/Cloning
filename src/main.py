@@ -221,32 +221,105 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             self.pcr_product = pydna.pcr(self.fw_primer, self.rv_primer, self.inseq)
             self.textBrowser.append(str(self.pcr_product.figure()))
             self.textBrowser.append("\n")
-            ov1, insert, ov2 = self.pcr_product.cut(self.enzyme1, self.enzyme2)
+            ov1, self.insert, ov2 = self.pcr_product.cut(self.enzyme1, self.enzyme2)
             if not self.checkBox.isChecked():
                 target_cut = self.tarseq.cut(self.enzyme3, self.enzyme4)
             else:
                 target_cut = self.tarseq.cut(self.enzyme1, self.enzyme2)
             target_index = self.frag_list.currentIndex()
-            target = target_cut[target_index]
+            self.target = target_cut[target_index]
             # print target with nice overlaps showing
-            self.result = (target + insert).looped()
+            self.result = (self.target + self.insert).looped()
             self.textBrowser.append("Success! Your vector is %d base pairs long. \n" % len(self.result.seq))
+            self.print_statment()
         except UnboundLocalError:
             self.textBrowser.append("Fill out all inputs")
         except:
             self.textBrowser.clear()
             self.textBrowser.append("Something went wrong, perhaps the fragments do not fit together?\n")
             try:
+                self.textBrowser.append("Attempting to print sequences: \n")
+                self.print_statment()
+            except:
+                self.textBrowser.append("Failed at printing sequences together. Attempting them seperatly.\n")
+            try:
                 self.textBrowser.append("Input sequence with ROI ends look like: \n")
-                self.textBrowser.append(str(insert.seq.fig()))
+                self.textBrowser.append(str(self.insert.seq.fig()))
             except:
                 self.textBrowser.append("There appears to be an issue with the sequence containing your gene of interest.")
             try:
                 self.textBrowser.append("\nTarget Vecotor ends look like:\n")
-                self.textBrowser.append(str(target.seq.fig()))
+                self.textBrowser.append(str(self.target.seq.fig()))
             except:
                 self.textBrowser.append("There appears to be an issue with your target vector sequence.")
         return
+
+    def print_statment(self):
+        '''
+        Writes out the top an bottom sequences around the ligation areas.
+        '''
+        topline = ""
+        bottomline = ""
+
+        def second_half():
+                topline = ""
+                bottomline = ""
+                if (self.target.seq.five_prime_end()[0] == "5'"):
+                        ovr = len(self.target.seq.five_prime_end()[1])
+                        topline += str(self.target.seq)[0:10].lower()
+                        bottomline += " " * ovr + str(self.target.seq.reverse_complement())[-10:-ovr][::-1].lower()
+                elif (self.target.seq.five_prime_end()[0] == "3'"):
+                        ovr = len(self.target.seq.five_prime_end()[1])
+                        topline += " " * ovr + str(self.target.seq)[ovr:10].lower()
+                        bottomline += str(self.target.seq.reverse_complement())[-10:][::-1].lower()
+                elif (self.target.seq.five_prime_end()[0] == 'blunt'):
+                        topline += " " + str(self.target.seq)[0:10].lower()
+                        bottomline += " " + str(self.target.seq.reverse_complement())[-10:][::-1].lower()
+                return [topline, bottomline]
+
+        def in_insert():
+                topline = ""
+                bottomline = ""
+                topline += self.insert.seq.fig().split("\n")[1].upper()
+                bottomline += self.insert.seq.fig().split("\n")[2].upper()
+                return [topline, bottomline]
+
+        if (self.target.seq.three_prime_end()[0] == 'blunt'):
+                topline += str(self.target.seq)[0:10]
+                bottomline += str(self.target.seq.reverse_complement())[0:10][::-1]
+                topline += in_insert()[0]
+                bottomline += in_insert()[1]
+                topline += second_half()[0]
+                bottomline += second_half()[1]
+
+        elif (self.target.seq.three_prime_end()[0] == "5'"):
+                ovr = len(self.target.seq.three_prime_end()[1])
+                topline += str(self.target.seq)[-10:-ovr] + " " * ovr
+                bottomline += str(self.target.seq.reverse_complement())[0:10][::-1]
+                topline += in_insert()[0]
+                bottomline += in_insert()[1]
+                topline += second_half()[0]
+                bottomline += second_half()[1]
+        elif (self.target.seq.three_prime_end()[0] == "3'"):
+                #  untested
+                ovr = len(self.target.seq.three_prime_end()[1])
+                topline += str(self.target.seq)[0:10]
+                bottomline += str(self.target.seq.reverse_complement())[ovr:10][::-1] + " " * ovr
+                topline += in_insert()[0]
+                bottomline += in_insert()[1]
+                topline += second_half()[0]
+                bottomline += second_half()[1]
+        else:
+                return
+        heading = " " * 11 + "INSERT \n"
+        topline += "\n"
+        bottomline += "\n"
+        self.textBrowser.append(heading)
+        self.textBrowser.append(topline)
+        self.textBrowser.append(bottomline)
+        self.textBrowser.append("Ligated: \n" + heading)
+        self.textBrowser.append(topline.replace(' ', ''))
+        self.textBrowser.append(bottomline.replace(' ', ''))
 
     def save_result(self):
         try:
