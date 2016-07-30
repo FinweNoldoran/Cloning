@@ -9,6 +9,8 @@ import pydna
 from pydna.gel import weight_standard_sample
 from gelwindow import myplots
 
+CURRENT_VERSION = '0.0.01'
+
 '''
 CloneApp main python file. All windows are defined here, currently there is no help or update window. These are on my to do.
 '''
@@ -31,17 +33,49 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.save_vec.clicked.connect(self.save_result)
         self.digest_vec.clicked.connect(self.open_plot)
         self.actionHelp_Menu.triggered.connect(self.help_menu)
+        self.actionCheck_for_Updates.triggered.connect(self.check_updates)
+
+    def error_message(self, message):
+        msg = QtWidgets.QMessageBox()
+        msg.setText(message)
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.setStandardButtons(QtWidgets.QMessageBox.Close)
+        msg.exec_()
+
+    def check_updates(self):
+        def parse_version(version):
+            try:
+                score = [1000, 100, 10]
+                split = [int(v) for v in version.split(".")]
+                return sum([a*b for a, b in zip(split, score)])
+            except:
+                self.error_message("Could not update.")
+                return
+
+        local = parse_version(CURRENT_VERSION)
+        try:
+            import urllib2
+            vfile = urllib2.urlopen('https://raw.githubusercontent.com/FinweNoldoran/Cloning/master/src/VERSION')
+            remote = parse_version(vfile.read().strip())
+        except:
+            self.error_message("Could not connect to the update site!")
+            return
+
+        try:
+            if local < remote:
+                import webbrowser
+                webbrowser.open('https://github.com/FinweNoldoran/Cloning/releases/latest')
+            else:
+                self.error_message("No new updates available.")
+        except:
+            self.error_message("Could not connect to update download page.")
 
     def help_menu(self):
         try:
             import webbrowser
             webbrowser.open('https://github.com/FinweNoldoran/Cloning')
         except:
-            msg = QtWidgets.QMessageBox()
-            msg.setText("Cound not open help.")
-            msg.setIcon(QtWidgets.QMessageBox.Information)
-            msg.setStandardButtons(QtWidgets.QMessageBox.Close)
-            msg.exec_()
+            self.error_message("Could not connect to help pages.")
 
         # the clone button, maybe only enable when all inputs are there?
     def open_plot(self):
