@@ -151,8 +151,10 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
                         self.tarseq = pydna.parse(str(self.target.text()))[0].looped()
                     else:
                         self.tarseq = pydna.parse(str(self.target.text()))[0]
-                except TypeError:
-                    self.textBrowser.append("Could not read input files")
+                except (TypeError, IndexError):
+                    self.textBrowser.append("Could not read input files to generate list of enzymes with restriction sites.")
+                except:
+                    self.error_message("Something went rather wrong.")
             if hasattr(self, 'tarseq'):
                 ana = br.Analysis(br.RestrictionBatch(br.CommOnly), self.tarseq.seq)
                 options = br.RestrictionBatch(ana.with_sites())
