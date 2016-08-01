@@ -84,8 +84,12 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
             else:
                 print "plotting if statment fails"
                 return
+        except IndexError:
+            self.main_window.textBrowser.append("The selected sequence is not available.")
+            return
         except Exception, e:
             self.main_window.textBrowser.append("DNA selection error " + str(e))
+            return
         try:
             if self.check_enzy1.isChecked() and not self.check_enzy2.isChecked():
                 self.update_figure(gene, enz1=str(self.select_enz1.currentText()), enz2=None)
@@ -98,7 +102,7 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
             else:
                 self.main_window.textBrowser.append("Enzyme selection error")
         except Exception, e:
-            print "enzyme selector error " + str(e)
+            self.main_window.textBrowser.append("Enzyme selector error " + str(e))
             return
         try:
             # self.figure.draw()  # this executes!
