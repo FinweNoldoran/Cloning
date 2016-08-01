@@ -204,6 +204,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         The target sequence is parsed again as in the populate_frag function. A PCR reaction is run.
         Sequences are digested and ligated, and the output is saved to self.result Which is always assumed to be a looped stucture.
         '''
+        self.textBrowser.clear()
         try:
             if self.cir_in.isChecked():
                 self.inseq = pydna.parse(str(self.inputs.text()))[0].looped()
@@ -231,7 +232,6 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             self.target = target_cut[target_index]
             # print target with nice overlaps showing
             self.result = (self.target + self.insert).looped()
-            self.textBrowser.clear()
             self.textBrowser.append("Success! Your vector is %d base pairs long. \n" % len(self.result.seq))
             self.print_statment()
         except UnboundLocalError:
@@ -239,8 +239,6 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         except AttributeError:
             self.textBrowser.append("Make sure to choose a target fragment to clone into!")
         except Exception, e:
-            self.textBrowser.clear()
-            print str(e)[0:16]
             if (str(e)[0:16] == "No PCR products!"):
                 self.textBrowser.append(str(e))
                 return
