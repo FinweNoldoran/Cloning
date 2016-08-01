@@ -23,7 +23,7 @@ matplotlib.use('Qt5Agg')
 import pydna
 from gelwindow import myplots
 
-CURRENT_VERSION = '0.0.01'
+CURRENT_VERSION = '0.0.02'
 
 '''
 CloneApp main python file. All windows are defined here, currently there is no help or update window. These are on my to do.
