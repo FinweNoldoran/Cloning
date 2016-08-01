@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 import sys
 import design
 import pydna
@@ -49,6 +49,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.digest_vec.clicked.connect(self.open_plot)
         self.actionHelp_Menu.triggered.connect(self.help_menu)
         self.actionCheck_for_Updates.triggered.connect(self.check_updates)
+        self.textBrowser.setCurrentFont(QtGui.QFont("Courier New"))
 
     def error_message(self, message):
         msg = QtWidgets.QMessageBox()
@@ -230,13 +231,21 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             self.target = target_cut[target_index]
             # print target with nice overlaps showing
             self.result = (self.target + self.insert).looped()
+            self.textBrowser.clear()
             self.textBrowser.append("Success! Your vector is %d base pairs long. \n" % len(self.result.seq))
             self.print_statment()
         except UnboundLocalError:
             self.textBrowser.append("Fill out all inputs")
-        except:
+        except AttributeError:
+            self.textBrowser.append("Make sure to choose a target fragment to clone into!")
+        except Exception, e:
             self.textBrowser.clear()
-            self.textBrowser.append("Something went wrong, perhaps the fragments do not fit together?\n")
+            print str(e)[0:16]
+            if (str(e)[0:16] == "No PCR products!"):
+                self.textBrowser.append(str(e))
+                return
+            self.textBrowser.append("Something went wrong, perhaps the fragments do not fit together?")
+            self.textBrowser.append("error " + str(e) + "\n")
             try:
                 self.textBrowser.append("Attempting to print sequences: \n")
                 self.print_statment()
@@ -285,8 +294,8 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
                 return [topline, bottomline]
 
         if (self.target.seq.three_prime_end()[0] == 'blunt'):
-                topline += str(self.target.seq)[0:10]
-                bottomline += str(self.target.seq.reverse_complement())[0:10][::-1]
+                topline += str(self.target.seq)[0:10].lower()
+                bottomline += str(self.target.seq.reverse_complement())[0:10][::-1].lower()
                 topline += in_insert()[0]
                 bottomline += in_insert()[1]
                 topline += second_half()[0]
@@ -294,8 +303,8 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
         elif (self.target.seq.three_prime_end()[0] == "5'"):
                 ovr = len(self.target.seq.three_prime_end()[1])
-                topline += str(self.target.seq)[-10:-ovr] + " " * ovr
-                bottomline += str(self.target.seq.reverse_complement())[0:10][::-1]
+                topline += str(self.target.seq)[-10:-ovr].lower() + " " * ovr
+                bottomline += str(self.target.seq.reverse_complement())[0:10][::-1].lower()
                 topline += in_insert()[0]
                 bottomline += in_insert()[1]
                 topline += second_half()[0]
@@ -303,23 +312,21 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         elif (self.target.seq.three_prime_end()[0] == "3'"):
                 #  untested
                 ovr = len(self.target.seq.three_prime_end()[1])
-                topline += str(self.target.seq)[0:10]
-                bottomline += str(self.target.seq.reverse_complement())[ovr:10][::-1] + " " * ovr
+                topline += str(self.target.seq)[0:10].lower()
+                bottomline += str(self.target.seq.reverse_complement())[ovr:10][::-1].lower() + " " * ovr
                 topline += in_insert()[0]
                 bottomline += in_insert()[1]
                 topline += second_half()[0]
                 bottomline += second_half()[1]
         else:
                 return
-        heading = " " * 11 + "INSERT \n"
-        topline += "\n"
-        bottomline += "\n"
+        heading = " " * 11 + "INSERT"
         self.textBrowser.append(heading)
         self.textBrowser.append(topline)
         self.textBrowser.append(bottomline)
-        self.textBrowser.append("Ligated: \n" + heading)
+        self.textBrowser.append("\nLigated: \n" + heading)
         self.textBrowser.append(topline.replace(' ', ''))
-        self.textBrowser.append(bottomline.replace(' ', ''))
+        self.textBrowser.append(bottomline.replace(' ', '')+"\n")
 
     def save_result(self):
         try:
