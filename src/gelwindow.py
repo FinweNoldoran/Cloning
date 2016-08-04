@@ -19,13 +19,17 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
         self.close_plot.clicked.connect(self.close)  # works
         self.plot_update.clicked.connect(self.update_plot)
         self.check_enzy1.stateChanged.connect(lambda: self.update_enz(self.check_enzy1, self.select_enz1))
+        self.check_enzy1.setToolTip("Choose an enzyme to digest your sequence.")
         self.check_enzy2.stateChanged.connect(lambda: self.update_enz(self.check_enzy2, self.select_enz2))
+        self.check_enzy2.setToolTip("Choose a second enzyme to digest your sequence.")
         self.seq_sele.addItems(['1. Sequence with ROI', '2. Target Vector', '3. PCR Product', '4. Resultant Vector'])
+        self.seq_sele.setToolTip("Select a sequence to run on your gel.")
         self.enzy_list = br.CommOnly.as_string()
         self.enzy_list.sort()
         self.select_enz1.addItems(self.enzy_list)
         self.select_enz2.addItems(self.enzy_list)
         self.ladder.addItems(['1kb GeneRuler', '1kb+ GeneRuler', 'Mix GeneRuler', 'High Range GeneRuler'])
+        self.ladder.setToolTip("Choose a DNA ladder.")
 
     def update_enz(self, enz_check, enz_select):
         '''
