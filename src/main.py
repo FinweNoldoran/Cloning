@@ -26,7 +26,7 @@ from gelwindow import myplots
 CURRENT_VERSION = '0.0.02'
 
 '''
-CloneApp main python file. All windows are defined here, currently there is no help or update window. These are on my to do.
+CloneApp main python file. Main window is defined here.
 '''
 
 
@@ -291,6 +291,21 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
                 bottomline += self.insert.seq.fig().split("\n")[2].upper()
                 return [topline, bottomline]
 
+        def match_line(topline, bottomline):
+            matchline = ""
+            for n in zip(topline.lower(), bottomline.lower()):
+                if (n[0] == 'a' and n[1] == 't'):
+                    matchline += "|"
+                elif (n[0] == 't' and n[1] == 'a'):
+                    matchline += "|"
+                elif (n[0] == 'c' and n[1] == 'g'):
+                    matchline += "|"
+                elif (n[0] == 'g' and n[1] == 'c'):
+                    matchline += "|"
+                else:
+                    matchline += ":"
+            return matchline
+
         if (self.target.seq.three_prime_end()[0] == 'blunt'):
                 topline += str(self.target.seq)[0:10].lower()
                 bottomline += str(self.target.seq.reverse_complement())[0:10][::-1].lower()
@@ -323,7 +338,9 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.textBrowser.append(topline)
         self.textBrowser.append(bottomline)
         self.textBrowser.append("\nLigated: \n" + heading)
+        matchline = match_line(topline.replace(' ', ''), bottomline.replace(' ', ''))
         self.textBrowser.append(topline.replace(' ', ''))
+        self.textBrowser.append(matchline)
         self.textBrowser.append(bottomline.replace(' ', '')+"\n")
 
     def save_result(self):
