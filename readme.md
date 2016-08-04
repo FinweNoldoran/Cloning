@@ -9,7 +9,7 @@ CloneApp is a simple GUI wrapper for the python pydna library, currently it supp
 ### What you need
 For a basic run cloning simulation, you will require four pieces of information:
 
-1. A sequence file (pydna compatible: .gb, .fasta, .embl) containing the gene you wish to clone, referred to from here on as your roi.
+1. A sequence file (pydna compatible: genebank, fasta or embl) containing the gene you wish to clone, referred to from here on as your roi.
 2. A sequence file containing the vector you wish to clone into.
 3. A forward primer sequence.
 4. A reverse primer sequence.

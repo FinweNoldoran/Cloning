@@ -57,6 +57,8 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.save_vec.clicked.connect(self.save_result)
         self.digest_vec.clicked.connect(self.open_plot)
         self.digest_vec.setToolTip("Click to run an gel of your sequences.")
+        self.external.clicked.connect(self.open_external)
+        self.external.setToolTip("Click to open cloned sequence in the default sequence viewer installed on your system.")
         self.actionHelp_Menu.triggered.connect(self.help_menu)
         self.actionCheck_for_Updates.triggered.connect(self.check_updates)
         self.textBrowser.setCurrentFont(QtGui.QFont("Courier New"))
@@ -160,7 +162,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
                 options = options.as_string()
                 options.sort()
                 self.enzyB.clear()
-                self.enzyB.addItems(options)  # test sort
+                self.enzyB.addItems(options)
             except (AttributeError, TypeError, ValueError):
                 return
         else:
@@ -364,10 +366,34 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             pathQFileDialog.setNameFilter('Gene bank(*.gb)')  # TEST
             pathQFileDialog.setDefaultSuffix('gb')
             if pathQFileDialog.exec_() == QtWidgets.QFileDialog.Accepted:
-                self.result.write(pathQFileDialog.selectedFiles()[0])
-                self.textBrowser.append("Saved file %s " % pathQFileDialog.selectedFiles()[0])
-        except Exception, e:
-            self.textBrowser.append("Something went wrong while trying to save your file." + str(e))
+                self.savefilename = pathQFileDialog.selectedFiles()[0]
+                self.result.write(self.savefilename)
+                self.textBrowser.append("Saved file %s " % self.savefilename)
+        except:
+            self.textBrowser.append("Something went wrong while trying to save your file.")
+        return
+
+    def open_external(self):
+        #  Currently OS X only
+        import os
+        if hasattr(self, 'savefilename'):
+            try:
+                os.system("open" + self.savefile)
+            except:
+                self.error_message("Could not open in external viewer.")
+        else:
+            # generate a temporary file
+            try:
+                import tempfile
+                temp = tempfile._get_default_tempdir()
+                temp += next(tempfile._get_candidate_names()) + ".gb"
+                self.result.write(temp)
+                os.system("open " + temp)
+                os.remove(temp)
+            except AttributeError:
+                self.textBrowser.append("Could not open external viewer. Have you cloned your vector already?")
+            except:
+                self.error_message("Could not open in external viewer.")
         return
 
 
