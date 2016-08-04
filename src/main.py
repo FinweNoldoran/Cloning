@@ -205,6 +205,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
                 target_cut = self.tarseq.cut(self.enzyme1, self.enzyme2)
             for i, fragment in enumerate(target_cut):
                 self.frag_list.addItem('Fragment %d, with %d basepairs ' % (i+1, len(fragment.seq)))
+            self.frag_list.setCurrentIndex(0)
         except:
             return  # better errors here
         return
@@ -231,6 +232,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             return
         try:
             self.pcr_product = pydna.pcr(self.fw_primer, self.rv_primer, self.inseq)
+            self.textBrowser.append("Your PCR reaction looks like this: \n")
             self.textBrowser.append(str(self.pcr_product.figure()))
             self.textBrowser.append("\n")
             ov1, self.insert, ov2 = self.pcr_product.cut(self.enzyme1, self.enzyme2)
@@ -242,8 +244,8 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             self.target = target_cut[target_index]
             # print target with nice overlaps showing
             self.result = (self.target + self.insert).looped()
-            self.textBrowser.append("Success! Your vector is %d base pairs long. \n" % len(self.result.seq))
             self.print_statment()
+            self.textBrowser.append("Success! Your vector is %d base pairs long. \n" % len(self.result.seq))
         except UnboundLocalError:
             self.textBrowser.append("Fill out all inputs")
         except AttributeError:
@@ -312,6 +314,8 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
                     matchline += "|"
                 elif (n[0] == 'g' and n[1] == 'c'):
                     matchline += "|"
+                elif(n[0] == '.' and n[1] == '.'):
+                    matchline += '|'
                 else:
                     matchline += ":"
             return matchline
@@ -347,7 +351,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.textBrowser.append(heading)
         self.textBrowser.append(topline)
         self.textBrowser.append(bottomline)
-        self.textBrowser.append("\nLigated: \n" + heading)
+        self.textBrowser.append("\n\nLigated: \n" + heading)
         matchline = match_line(topline.replace(' ', ''), bottomline.replace(' ', ''))
         self.textBrowser.append(topline.replace(' ', ''))
         self.textBrowser.append(matchline)
@@ -357,12 +361,15 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
     def save_result(self):
         try:
-            fileName = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File Name', '/')[0]
-            if fileName:
-                self.result.write(fileName)
-                self.textBrowser.append("Saved file %s" % fileName)
-        except:
-            self.textBrowser.append("Something went wrong while trying to save your file.")
+            pathQFileDialog = QtWidgets.QFileDialog(self)
+            pathQFileDialog.setAcceptMode(QtWidgets.QFileDialog.AcceptSave)
+            pathQFileDialog.setNameFilter('Gene bank(*.gb)')  # TEST
+            pathQFileDialog.setDefaultSuffix('gb')
+            if pathQFileDialog.exec_() == QtWidgets.QFileDialog.Accepted:
+                self.result.write(pathQFileDialog.selectedFiles()[0])
+                self.textBrowser.append("Saved file %s " % pathQFileDialog.selectedFiles()[0])
+        except Exception, e:
+            self.textBrowser.append("Something went wrong while trying to save your file." + str(e))
         return
 
 
