@@ -103,16 +103,14 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         except:
             self.error_message("Could not connect to help pages.")
 
-        # the clone button, maybe only enable when all inputs are there?
     def open_plot(self):
         plotwindow = myplots(self, parent=self)
         plotwindow.show()
 
     def browse_folder(self, line):
         line.clear()
-        file_name = QtWidgets.QFileDialog.getOpenFileName(self, "Pick a file", "/",)[0]
+        file_name = QtWidgets.QFileDialog.getOpenFileName(self, "Pick a file", "/", "Sequence files(*.gb *.fasta *.embl *.genbank *.fas *.fna *.ffn)")[0]
         line.setText(file_name)
-        # self.textBrowser.append("Testing")
 
     def get_tarseq(self):
         if not hasattr(self, 'tarseq'):
