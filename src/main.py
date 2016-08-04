@@ -263,7 +263,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
     def print_statment(self):
         '''
-        Writes out the top an bottom sequences around the ligation areas.
+        Writes out the top an bottom sequences around the ligation areas and shows if there are any sequence mismatches.
         '''
         topline = ""
         bottomline = ""
@@ -342,6 +342,8 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.textBrowser.append(topline.replace(' ', ''))
         self.textBrowser.append(matchline)
         self.textBrowser.append(bottomline.replace(' ', '')+"\n")
+        if ":" in matchline:
+            self.textBrowser.append("There is a squence mismatch in the ligation area!")
 
     def save_result(self):
         try:

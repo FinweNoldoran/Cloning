@@ -5,8 +5,9 @@
 # Created by: PyQt5 UI code generator 5.6
 #
 # WARNING! All changes made in this file will be lost!
+from PyQt5 import QtCore, QtWidgets
+from dropedit import dropedit
 
-from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -86,7 +87,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setContentsMargins(11, 11, 11, 11)
         self.horizontalLayout.setSpacing(6)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.inputs = QtWidgets.QLineEdit(self.groupBox)
+        # self.inputs = QtWidgets.QLineEdit(self.groupBox)
+        self.inputs = dropedit(self.groupBox)
         self.inputs.setObjectName("inputs")
         self.horizontalLayout.addWidget(self.inputs)
         self.br_in = QtWidgets.QPushButton(self.groupBox)
@@ -101,7 +103,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.setContentsMargins(11, 11, 11, 11)
         self.horizontalLayout_3.setSpacing(6)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.target = QtWidgets.QLineEdit(self.groupBox)
+        # self.target = QtWidgets.QLineEdit(self.groupBox)
+        self.target = dropedit(self.groupBox)
         self.target.setClearButtonEnabled(False)
         self.target.setObjectName("target")
         self.horizontalLayout_3.addWidget(self.target)
