@@ -173,7 +173,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         if not self.checkBox.isChecked():
             if self.get_tarseq():
                 ana = br.Analysis(br.RestrictionBatch(br.CommOnly), self.tarseq.seq)
-                options = br.RestrictionBatch(ana.with_sites())
+                options = br.RestrictionBatch(ana.with_N_sites(1))
                 enz = options.as_string()
             else:
                 enz = br.CommOnly.as_string()
