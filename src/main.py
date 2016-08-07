@@ -193,8 +193,9 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             if not self.checkBox.isChecked():
                 self.enzyme3 = br.RestrictionBatch([str(self.enzyC.currentText())]).get(str(self.enzyC.currentText()))
                 self.enzyme4 = br.RestrictionBatch([str(self.enzyD.currentText())]).get(str(self.enzyD.currentText()))
-            self.enzyme1 = br.RestrictionBatch([str(self.enzyA.currentText())]).get(str(self.enzyA.currentText()))
-            self.enzyme2 = br.RestrictionBatch([str(self.enzyB.currentText())]).get(str(self.enzyB.currentText()))
+            else:
+                self.enzyme1 = br.RestrictionBatch([str(self.enzyA.currentText())]).get(str(self.enzyA.currentText()))
+                self.enzyme2 = br.RestrictionBatch([str(self.enzyB.currentText())]).get(str(self.enzyB.currentText()))
         except (ValueError, TypeError):
             self.textBrowser.append("No enzyme selection")
         try:
@@ -230,6 +231,13 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         except IndexError:
             self.textBrowser.append("Are you sure you have input files?")
             return
+        if not hasattr(self, 'enzyme1'):
+            try:
+                self.enzyme1 = br.RestrictionBatch([str(self.enzyA.currentText())]).get(str(self.enzyA.currentText()))
+                self.enzyme2 = br.RestrictionBatch([str(self.enzyB.currentText())]).get(str(self.enzyB.currentText()))
+            except:
+                self.textBrowser.append("No enzyme selection.")
+                return
         try:
             self.pcr_product = pydna.pcr(self.fw_primer, self.rv_primer, self.inseq)
             self.textBrowser.append("Your PCR reaction looks like this: \n")
