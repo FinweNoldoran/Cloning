@@ -19,9 +19,8 @@ import design
 import pydna
 import Bio.Restriction as br
 import matplotlib
-matplotlib.use('Qt5Agg')
-import pydna
 from gelwindow import myplots
+matplotlib.use('Qt5Agg')
 
 CURRENT_VERSION = '0.0.04'
 
