@@ -371,7 +371,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         try:
             pathQFileDialog = QtWidgets.QFileDialog(self)
             pathQFileDialog.setAcceptMode(QtWidgets.QFileDialog.AcceptSave)
-            pathQFileDialog.setNameFilter('Gene bank(*.gb)')  # TEST
+            pathQFileDialog.setNameFilter('Gene bank(*.gb)')
             pathQFileDialog.setDefaultSuffix('gb')
             if pathQFileDialog.exec_() == QtWidgets.QFileDialog.Accepted:
                 self.savefilename = pathQFileDialog.selectedFiles()[0]
