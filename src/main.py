@@ -16,11 +16,12 @@
 from PyQt5 import QtWidgets, QtGui
 import sys
 import design
-import pydna
+
 import Bio.Restriction as br
 import matplotlib
 from gelwindow import myplots
 matplotlib.use('Qt5Agg')
+import pydna
 
 CURRENT_VERSION = '0.0.04'
 
@@ -81,8 +82,9 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
         local = parse_version(CURRENT_VERSION)
         try:
-            import urllib2
-            vfile = urllib2.urlopen('https://raw.githubusercontent.com/FinweNoldoran/Cloning/master/src/VERSION')
+            #import urllib2
+            import urllib.request, urllib.error, urllib.parse
+            vfile = urllib.request.urlopen('https://raw.githubusercontent.com/FinweNoldoran/Cloning/master/src/VERSION')
             remote = parse_version(vfile.read().strip())
         except:
             self.error_message("Could not connect to the update site!")
@@ -258,7 +260,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             self.textBrowser.append("Fill out all inputs")
         except AttributeError:
             self.textBrowser.append("Make sure to choose a target fragment to clone into!")
-        except Exception, e:
+        except Exception as e:
             if (str(e)[0:16] == "No PCR products!"):
                 self.textBrowser.append(str(e))
                 return
