@@ -253,7 +253,7 @@ class CloneApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             self.result = (self.target + self.insert).looped()
             self.print_statment()
             self.textBrowser.append("Success! Your vector is %d base pairs long. \n" % len(self.result.seq))
-            self.textBrowser.append("Caveats: \n-If you used the same enzyme for both ends of your insert no error will appear and your sequence will appear correct - however in reality half you sequences will insert backwards! \n-Success here indicates that cloning will work, however please check the result as an error in primer design can lead to frameshifts or other issue which are protein related and thus do not appear as errors here.")
+            self.textBrowser.append("Caveats: \n-If you used the same enzyme for both ends of your insert no error will appear and your sequence will appear correct - however in reality half of your sequences will insert backwards! \n-Success here indicates that cloning will (should) work, however please check the result as an error in primer design can lead to frameshifts or other issue which are protein related and thus do not appear as errors here.")
         except UnboundLocalError:
             self.textBrowser.append("Fill out all inputs")
         except AttributeError:
