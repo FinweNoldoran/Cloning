@@ -20,7 +20,6 @@ import pydna
 import Bio.Restriction as br
 import matplotlib
 matplotlib.use('Qt5Agg')
-import pydna
 from pydna.gel import weight_standard_sample
 
 
@@ -155,7 +154,7 @@ class myplots(QtWidgets.QDialog, geldesign.Ui_Dialog):
             self.gel_browser.append(out)
         try:
             if enz1 is None and enz2 is None:
-                pydna.Gel([st, [gene]]).run(infig=self.figure)  # check if gnee needs to be in list -- it does this command works
+                pydna.gel.Gel([st, [gene]]).run(infig=self.figure)  # check if gnee needs to be in list -- it does this command works
                 return
             # single enzyme
             elif (enz1 is not None and enz2 is None):
