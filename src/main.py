@@ -23,7 +23,7 @@ from gelwindow import myplots
 matplotlib.use('Qt5Agg')
 import pydna
 
-CURRENT_VERSION = '0.0.04'
+CURRENT_VERSION = '0.0.05'
 
 '''
 CloneApp main python file. Main window is defined here.
